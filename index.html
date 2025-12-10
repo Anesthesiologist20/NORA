@@ -3,226 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOH Anesthesia Record (No Header)</title>
+    <title>Pro Medical Anesthesia Record</title>
     <style>
         :root {
-            --primary-border: #000;
-            --bg-header: #f4f4f4;
-            --input-focus: #e0f7fa;
-            --section-bg: #fff;
-            --btn-disabled: #ddd;
-            --vital-bg: #ffffff;
-            --drug-bg: #fffcf0;
-            --divider-bg: #444;
+            /* Color Palette */
+            --primary: #00796b;       /* Teal 700 */
+            --primary-light: #e0f2f1; /* Teal 50 */
+            --secondary: #455a64;     /* Blue Grey 700 */
+            --accent: #ff6f00;        /* Amber 900 for Drugs header */
+            --text-main: #263238;
+            --border-color: #cfd8dc;
+            
+            /* Sections Backgrounds */
+            --bg-vital: #e3f2fd;      /* Very Light Blue */
+            --bg-drug: #fff8e1;       /* Very Light Amber */
+            --input-bg: rgba(0,0,0,0.03);
+            --input-focus: #ffffff;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', 'Roboto', Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f2f5;
-            font-size: 12px;
-            color: #333;
+            background-color: #eceff1; /* Light grey background for screen */
+            color: var(--text-main);
+            font-size: 13px;
         }
 
+        /* --- THE PAPER SHEET (The Container) --- */
         .paper-sheet {
             background: white;
             max-width: 100%;
             margin: 0 auto;
-            border: 1px solid #ccc;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 25px;
             box-sizing: border-box;
+            border-top: 5px solid var(--primary); /* Professional Top Border */
         }
 
-        /* --- PRINT BUTTON STYLE --- */
-        .print-btn-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+        /* --- PRINT BUTTON --- */
+        .print-btn-container { text-align: center; margin-bottom: 20px; }
         .btn-print {
-            background-color: #2196F3;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background-color: var(--secondary); color: white;
+            padding: 10px 25px; border: none; border-radius: 50px;
+            cursor: pointer; font-size: 15px; font-weight: 600;
+            box-shadow: 0 4px 10px rgba(69, 90, 100, 0.3);
+            transition: transform 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
         }
-        .btn-print:hover { background-color: #0b7dda; }
+        .btn-print:hover { transform: translateY(-2px); background-color: #37474f; }
 
-        /* --- LAYOUT UTILS --- */
-        .row { display: flex; gap: 15px; margin-bottom: 10px; flex-wrap: wrap; }
-        .col { flex: 1; min-width: 120px; }
-        .bold { font-weight: 700; }
+        /* --- LAYOUT GRID --- */
+        .row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 140px; }
         
-        .section-box {
-            border: 1px solid #ccc;
-            padding: 10px;
+        /* --- CARDS (SECTIONS) --- */
+        .section-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
             margin-bottom: 15px;
-            background: var(--section-bg);
-            border-radius: 4px;
+            transition: box-shadow 0.3s;
         }
-        .section-title {
-            background: #eee;
+        .section-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+        .section-label {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            font-size: 11px;
             font-weight: bold;
-            padding: 5px 10px;
-            margin: -10px -10px 10px -10px;
-            border-bottom: 1px solid #ccc;
-            border-radius: 4px 4px 0 0;
-            font-size: 0.9em;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        /* --- INPUTS --- */
-        input[type="text"], input[type="number"], input[type="time"], input[type="date"] {
-            border: none;
-            border-bottom: 1px dashed #aaa;
-            background: transparent;
-            font-family: inherit;
-            padding: 2px 5px;
+        /* --- INPUTS Styling --- */
+        input[type="text"], input[type="number"], input[type="time"], input[type="date"], select {
+            border: 1px solid transparent;
+            background-color: var(--input-bg);
+            border-radius: 4px;
+            padding: 6px 8px;
             width: 100%;
             outline: none;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.2s;
+            box-sizing: border-box; /* Fix width issues */
         }
-        input:focus { background-color: var(--input-focus); border-bottom: 1px solid #000; }
+        input:focus, select:focus {
+            background-color: var(--input-focus);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        label { font-size: 0.85rem; font-weight: 600; color: #546e7a; margin-bottom: 4px; display: block; }
         
-        label { margin-right: 5px; font-weight: 600; font-size: 0.9em; color: #444; }
-        .checkbox-group { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .checkbox-group label { display: flex; align-items: center; gap: 4px; font-weight: normal; cursor: pointer; }
-        input[type="checkbox"] { transform: scale(1.2); cursor: pointer; }
+        /* Checkboxes */
+        .checkbox-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; height: 100%; }
+        .checkbox-wrapper { display: flex; align-items: center; gap: 5px; cursor: pointer; background: var(--input-bg); padding: 4px 8px; border-radius: 4px; }
+        input[type="checkbox"] { accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer; }
 
-        /* --- TOOLBAR --- */
+        /* --- THE SMART GRID --- */
         .grid-toolbar {
+            background: #263238; /* Dark elegant header */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
             display: flex; justify-content: space-between; align-items: center;
-            background: #333; color: white; padding: 8px 15px; border-radius: 4px 4px 0 0;
-            flex-wrap: wrap; gap: 10px; margin-top: 10px;
+            flex-wrap: wrap; gap: 10px;
         }
-        .toolbar-group { display: flex; align-items: center; gap: 15px; }
-        .toolbar-input { padding: 4px 8px; border-radius: 4px; border: none; font-weight: bold; color: #333; font-size: 13px; }
-        select:disabled, button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-add { background: #4CAF50; color: white; padding: 6px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-
-        /* --- TABLE --- */
-        .table-container {
-            overflow-x: auto; position: relative; border: 2px solid #333; margin-bottom: 15px;
-            max-height: 75vh;
-        }
-        table { border-collapse: collapse; width: 100%; min-width: 800px; }
-        th, td { border: 1px solid #ccc; padding: 0; text-align: center; height: 34px; }
         
+        /* Toolbar Controls */
+        .toolbar-group { display: flex; align-items: center; gap: 15px; background: rgba(255,255,255,0.1); padding: 5px 15px; border-radius: 50px; }
+        .toolbar-label { font-size: 11px; color: #b0bec5; margin-right: 5px; text-transform: uppercase; }
+        .toolbar-input { background: white !important; color: #333; font-weight: bold; height: 30px; border:none; padding: 0 10px; }
+
+        /* Add Button */
+        .btn-add {
+            background: #00c853; color: white; border: none; padding: 8px 20px;
+            border-radius: 50px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 11px;
+            letter-spacing: 0.5px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .btn-add:not(:disabled) { animation: pulse-green 2s infinite; }
+        .btn-add:disabled { background: #5f6e73; color: #90a4ae; cursor: not-allowed; animation: none; box-shadow: none; }
+        .btn-add:hover:not(:disabled) { background: #00e676; transform: scale(1.05); }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 200, 83, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 200, 83, 0); }
+        }
+
+        /* --- TABLE STYLING --- */
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 70vh;
+            background: white;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        
+        th, td { border: 1px solid #cfd8dc; padding: 0; height: 36px; text-align: center; }
+        
+        /* Sticky Column 1 (Parameter Names) */
         th:first-child, td:first-child {
-            position: sticky; left: 0; z-index: 2;
-            width: 150px; min-width: 150px; font-weight: bold; font-size: 0.9rem;
-            border-right: 2px solid #555;
-            background-color: #f9f9f9;
+            position: sticky; left: 0; z-index: 10;
+            width: 160px; min-width: 160px;
+            background: #fcfcfc;
+            border-right: 2px solid #b0bec5;
+            font-weight: 600; color: var(--secondary);
+            font-size: 12px;
+            padding-left: 10px; text-align: left; /* Align text left looks better */
         }
-        thead th { 
-            position: sticky; top: 0; background-color: #333; color: white; z-index: 3; height: 40px; 
-            font-family: 'Courier New', Courier, monospace; font-size: 14px;
-        }
-        thead th:first-child { z-index: 4; font-family: sans-serif; background: #333; color: white;}
 
-        .row-vital td { background-color: var(--vital-bg); }
-        .row-drug td { background-color: var(--drug-bg); }
+        /* Sticky Header (Time) */
+        thead th {
+            position: sticky; top: 0; z-index: 20;
+            background: #37474f; color: white;
+            font-family: 'Courier New', monospace; font-size: 14px; letter-spacing: 1px;
+            border-color: #546e7a;
+        }
+        thead th:first-child { z-index: 30; background: #37474f; color: #cfd8dc; text-align: center; font-family: sans-serif; }
+
+        /* Row Themes */
+        .row-vital td:not(:first-child) { background-color: var(--bg-vital); }
+        .row-vital td input:focus { background: white; }
+        
+        .row-drug td:not(:first-child) { background-color: var(--bg-drug); }
+        .row-drug td input:focus { background: white; }
+
+        /* Divider Row */
         .section-divider td {
-            background-color: var(--divider-bg); color: white; text-align: left; padding: 0 10px;
-            font-weight: bold; font-size: 11px; letter-spacing: 1px;
-            position: sticky; left: 0; z-index: 5;
+            background: var(--secondary); color: white;
+            text-align: left; padding: 0 15px;
+            font-weight: bold; letter-spacing: 2px;
+            position: sticky; left: 0; z-index: 25;
+            height: 30px;
         }
-        .btn-add-drug { 
-            font-size: 10px; cursor: pointer; float: right; margin-top: 6px;
-            background: white; color: black; border: none; padding: 3px 8px; border-radius: 3px; 
+        
+        /* Add Drug Button (Small) */
+        .btn-add-drug {
+            float: right; font-size: 10px; background: rgba(255,255,255,0.2); 
+            color: white; border: 1px solid rgba(255,255,255,0.4); padding: 2px 8px; 
+            border-radius: 4px; cursor: pointer; margin-top: 5px;
         }
-        td input { text-align: center; height: 100%; width: 100%; border:none; font-size: 13px; }
+        .btn-add-drug:hover { background: white; color: var(--secondary); }
 
-        /* --- PRINT SETTINGS --- */
+        /* Table Inputs */
+        td input { 
+            background: transparent !important; border: none !important; 
+            text-align: center; font-size: 13px; height: 100%; 
+        }
+
+        /* --- PRINT MEDIA QUERY --- */
         @media print {
-            body { padding: 0; background: white; }
-            .paper-sheet { border: none; box-shadow: none; width: 100%; padding: 0; margin: 0; }
-            .grid-toolbar, .no-print, .btn-add-drug, .print-btn-container { display: none !important; }
-            .table-container { overflow: visible; max-height: none; border: 1px solid #000; }
-            input { border-bottom: none !important; }
-            /* Force background colors in print */
+            body { background: white; padding: 0; }
+            .paper-sheet { border: none; box-shadow: none; padding: 0; margin: 0; border-top: none; }
+            .section-card { border: 1px solid #000; box-shadow: none; page-break-inside: avoid; margin-bottom: 10px; padding: 10px; }
+            .section-label { border: 1px solid #000; background: #eee; color: black; box-shadow: none; top: -12px; }
+            
+            .grid-toolbar, .no-print, .btn-print-container, .btn-add-drug { display: none !important; }
+            
+            .table-container { max-height: none; overflow: visible; border: 1px solid #000; }
+            th, td { border: 1px solid #000; }
+            
+            /* Enforce Background Colors for Print */
+            th:first-child { background-color: #eee !important; color: black !important; border-right: 2px solid black !important; }
+            .row-vital td { background-color: #f0f8ff !important; }
+            .row-drug td { background-color: #fffaf0 !important; }
+            .section-divider td { background-color: #333 !important; color: white !important; }
+            
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            
+            /* Remove fancy inputs styles for print */
+            input, select { border: none; background: transparent; padding: 0; }
         }
     </style>
 </head>
 <body>
 
     <div class="print-btn-container no-print">
-        <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <button class="btn-print" onclick="window.print()">
+            <span>🖨️ Print / Save PDF</span>
+        </button>
     </div>
 
     <div class="paper-sheet">
         
-        <div class="section-box" style="margin-top: 0;">
-            <div class="section-title">Operation Details</div>
+        <div class="section-card">
+            <span class="section-label">Operation Details</span>
             <div class="row">
-                <div class="col"><label>Operation:</label> <input type="text"></div>
-                <div class="col"><label>Surgeon:</label> <input type="text"></div>
-                <div class="col"><label>Anesthetist:</label> <input type="text"></div>
+                <div class="col">
+                    <label>Operation</label>
+                    <input type="text" placeholder="Procedure name...">
+                </div>
+                <div class="col">
+                    <label>Surgeon</label>
+                    <input type="text">
+                </div>
+                <div class="col">
+                    <label>Anesthetist</label>
+                    <input type="text">
+                </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col section-box">
-                <div class="section-title">Pre-Op Assessment</div>
-                <div class="checkbox-group" style="margin-bottom:10px;">
-                    <label><input type="checkbox"> Conscious</label>
-                    <label><input type="checkbox"> Unconscious</label>
-                    <label><input type="checkbox"> Sedated</label>
+            <div class="col section-card">
+                <span class="section-label">Pre-Op Assessment</span>
+                <div class="row">
+                    <div class="checkbox-group" style="width:100%">
+                        <label class="checkbox-wrapper"><input type="checkbox"> Conscious</label>
+                        <label class="checkbox-wrapper"><input type="checkbox"> Sedated</label>
+                    </div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div><label>BP:</label> <input type="text" style="width:60px;"></div>
-                    <div><label>Pulse:</label> <input type="text" style="width:60px;"></div>
-                    <div><label>RR:</label> <input type="text" style="width:60px;"></div>
-                    <div><label>SpO2:</label> <input type="text" style="width:60px;"> %</div>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-top:10px;">
+                    <div><label>BP</label><input type="text"></div>
+                    <div><label>Pulse</label><input type="text"></div>
+                    <div><label>RR</label><input type="text"></div>
+                    <div><label>SpO2</label><input type="text"></div>
                 </div>
             </div>
 
-            <div class="col section-box" style="flex:1.5;">
-                <div class="section-title">Airway & Technique</div>
-                <div class="row">
-                    <div class="col checkbox-group">
-                        <span class="bold">Type:</span>
-                        <label><input type="checkbox"> GA</label>
-                        <label><input type="checkbox"> Regional</label>
-                        <label><input type="checkbox"> Sedation</label>
+            <div class="col section-card" style="flex:1.3">
+                <span class="section-label">Airway & Technique</span>
+                <div class="row" style="margin-bottom:10px;">
+                    <div class="checkbox-group">
+                        <span style="font-weight:bold; font-size:11px; color:#aaa; margin-right:5px;">TYPE:</span>
+                        <label class="checkbox-wrapper"><input type="checkbox"> GA</label>
+                        <label class="checkbox-wrapper"><input type="checkbox"> Regional</label>
+                        <label class="checkbox-wrapper"><input type="checkbox"> Sedation</label>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col checkbox-group">
-                        <span class="bold">Device:</span>
-                        <label><input type="checkbox"> ETT</label>
-                        <label><input type="checkbox"> LMA</label>
-                        <label><input type="checkbox"> Mask</label>
+                    <div class="checkbox-group">
+                        <span style="font-weight:bold; font-size:11px; color:#aaa; margin-right:5px;">DEVICE:</span>
+                        <label class="checkbox-wrapper"><input type="checkbox"> ETT</label>
+                        <label class="checkbox-wrapper"><input type="checkbox"> LMA</label>
+                        <label class="checkbox-wrapper"><input type="checkbox"> Mask</label>
                     </div>
-                    <div class="col"><label>Size:</label> <input type="text" style="width:50px;"></div>
+                    <div style="width:60px;"><input type="text" placeholder="Size"></div>
                 </div>
             </div>
         </div>
 
-        <div class="grid-toolbar">
-            <span>INTRA-OPERATIVE CHART</span>
-            <div class="toolbar-group">
-                <div style="display:flex; flex-direction:column; font-size:10px;">
-                    <label style="color:#aaa;">Start Time:</label>
-                    <input type="time" id="gridStartTime" class="toolbar-input" onchange="checkConditions()">
+        <div class="grid-toolbar no-print">
+            <div style="font-weight:bold; letter-spacing:1px; display:flex; align-items:center;">
+                <span style="font-size:18px; margin-right:10px;">📊</span> INTRA-OPERATIVE CHART
+            </div>
+            
+            <div style="display:flex; gap:15px; align-items:center;">
+                <div class="toolbar-group">
+                    <span class="toolbar-label">1. Start</span>
+                    <input type="time" id="gridStartTime" class="toolbar-input" oninput="checkConditions()">
                 </div>
-                <div style="display:flex; flex-direction:column; font-size:10px;">
-                    <label style="color:#aaa;">Interval:</label>
-                    <select id="intervalSelect" class="toolbar-input" disabled onchange="checkConditions()">
-                        <option value="" selected disabled>--</option>
+                
+                <div class="toolbar-group">
+                    <span class="toolbar-label">2. Interval</span>
+                    <select id="intervalSelect" class="toolbar-input" disabled onchange="checkConditions()" style="width:100px;">
+                        <option value="" selected disabled>Select...</option>
                         <option value="5">5 Min</option>
                         <option value="10">10 Min</option>
                         <option value="15">15 Min</option>
                         <option value="30">30 Min</option>
                     </select>
                 </div>
-                <button id="btnAddBtn" class="btn-add" disabled onclick="addSmartColumn()">+ Add Time</button>
+                
+                <button id="btnAddBtn" class="btn-add" disabled onclick="handleAddTimeClick()">+ Add Time Column</button>
             </div>
         </div>
         
@@ -236,14 +333,14 @@
                 <tbody id="tableBody">
                     <tr class="row-vital"><td>SPO2 (%)</td></tr>
                     <tr class="row-vital"><td>ET CO2</td></tr>
-                    <tr class="row-vital"><td>Heart Rate</td></tr>
+                    <tr class="row-vital"><td>Heart Rate (HR)</td></tr>
                     <tr class="row-vital"><td>BP (Systolic)</td></tr>
                     <tr class="row-vital"><td>BP (Diastolic)</td></tr>
                     <tr class="row-vital"><td>Temp (°C)</td></tr>
 
                     <tr class="section-divider" id="dividerRow">
                         <td>
-                            <span>MEDICATIONS & FLUIDS</span>
+                            <span>💊 MEDICATIONS & FLUIDS</span>
                             <button class="btn-add-drug no-print" onclick="addDrugRow()">+ Add Row</button>
                         </td>
                     </tr>
@@ -253,101 +350,176 @@
                     <tr class="row-drug"><td>Volatile Agent</td></tr>
                     <tr class="row-drug"><td>Propofol</td></tr>
                     <tr class="row-drug"><td>Fentanyl</td></tr>
-                    <tr class="row-drug"><td>Muscle Relaxant</td></tr>
-                    <tr class="row-drug" id="fluidsRow" style="border-top:2px double #aaa; font-weight:bold;"><td>Fluids (ml)</td></tr>
-                    <tr class="row-drug" style="font-weight:bold;"><td>Blood Loss (ml)</td></tr>
+                    <tr class="row-drug"><td>Rocuronium</td></tr>
+                    
+                    <tr class="row-drug" id="fluidsRow" style="border-top:2px solid #b0bec5; font-weight:700; color:#00695c;"><td>Fluids (ml)</td></tr>
+                    <tr class="row-drug" style="font-weight:700; color:#b71c1c;"><td>Blood Loss (ml)</td></tr>
                 </tbody>
             </table>
         </div>
 
+        <div style="height:20px;"></div>
+
         <div class="row">
-            <div class="col section-box">
-                <div class="section-title">Safety Checks</div>
-                <div class="checkbox-group" style="margin-bottom:10px;">
-                    <label><input type="checkbox"> Eyes Taped</label>
-                    <label><input type="checkbox"> Pressure Points Padded</label>
-                    <label><input type="checkbox"> Warmer On</label>
-                    <label><input type="checkbox"> DVT Prophylaxis</label>
+            <div class="col section-card">
+                <span class="section-label" style="background:#43a047;">Safety Checks</span>
+                <div class="checkbox-group" style="margin-bottom:15px; display:grid; grid-template-columns: 1fr 1fr;">
+                    <label class="checkbox-wrapper"><input type="checkbox"> Eyes Taped</label>
+                    <label class="checkbox-wrapper"><input type="checkbox"> Points Padded</label>
+                    <label class="checkbox-wrapper"><input type="checkbox"> Warmer On</label>
+                    <label class="checkbox-wrapper"><input type="checkbox"> DVT Prophy</label>
                 </div>
-                <div style="border-top:1px dashed #ccc; padding-top:5px; margin-bottom:5px;">
-                    <div style="margin-bottom:5px;">
-                        <label>Tourniquet:</label> <input type="number" style="width:50px"> min | Pressure: <input type="number" style="width:50px"> mmHg
+                <div style="border-top:1px dashed #cfd8dc; padding-top:10px; font-size:12px;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
+                        <strong>Tourniquet:</strong> 
+                        <input type="number" style="width:50px; background:#f5f5f5;"> min
+                        <input type="number" style="width:50px; background:#f5f5f5;"> mmHg
                     </div>
-                    <div>
-                        <label>Throat Pack:</label> <label><input type="checkbox"> IN</label> <label><input type="checkbox"> OUT</label>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <strong>Throat Pack:</strong> 
+                        <label class="checkbox-wrapper"><input type="checkbox"> IN</label> 
+                        <label class="checkbox-wrapper"><input type="checkbox"> OUT</label>
                     </div>
                 </div>
             </div>
 
-            <div class="col section-box">
-                <div class="section-title">Recovery Room (PACU)</div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div><label>BP:</label> <input type="text"></div>
-                    <div><label>HR:</label> <input type="text"></div>
-                    <div><label>RR:</label> <input type="text"></div>
-                    <div><label>Sat:</label> <input type="text"></div>
+            <div class="col section-card">
+                <span class="section-label" style="background:#1e88e5;">Recovery Room (PACU)</span>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                    <div><label>BP</label><input type="text"></div>
+                    <div><label>HR</label><input type="text"></div>
+                    <div><label>RR</label><input type="text"></div>
+                    <div><label>Sat</label><input type="text"></div>
                 </div>
-                <div style="margin-top:10px; border-top:1px dashed #ccc; padding-top:5px;">
-                    <label class="bold">Aldrete Score:</label> <input type="text" style="width:50px; text-align:center;"> / 10
+                <div style="margin-top:15px; text-align:center; background:#e3f2fd; padding:5px; border-radius:4px;">
+                    <strong style="color:#0d47a1;">Aldrete Score:</strong> 
+                    <input type="text" style="width:50px; text-align:center; font-weight:bold; border-bottom:2px solid #0d47a1 !important;"> / 10
                 </div>
             </div>
         </div>
 
-        <div class="section-box">
-            <label class="bold">Comments / Intraoperative Events:</label>
-            <textarea style="width:100%; border:1px dashed #ccc; height:50px; font-family:inherit; margin-top:5px;"></textarea>
+        <div class="section-card">
+            <span class="section-label" style="background:#546e7a;">Comments / Events</span>
+            <textarea style="width:100%; border:none; background:#f9f9f9; height:50px; font-family:inherit; padding:10px; resize:vertical; outline:none;"></textarea>
         </div>
 
-        <div class="row" style="margin-top: 20px;">
+        <div class="row" style="margin-top: 30px; align-items:flex-end;">
             <div class="col" style="text-align:center;">
-                <input type="text" placeholder="Sign Name">
-                <div style="border-top:1px solid #000; display:inline-block; width:80%; margin-top:5px;">Anesthetist Signature</div>
+                <input type="text" style="text-align:center; border-bottom:1px solid #333 !important; border-radius:0;">
+                <div style="margin-top:5px; font-weight:bold; color:#78909c;">Anesthetist Signature</div>
             </div>
             <div class="col" style="text-align:center;">
-                <input type="date">
-                <div style="border-top:1px solid #000; display:inline-block; width:80%; margin-top:5px;">Date</div>
+                <input type="date" style="text-align:center; border-bottom:1px solid #333 !important; border-radius:0;">
+                <div style="margin-top:5px; font-weight:bold; color:#78909c;">Date</div>
             </div>
         </div>
 
     </div>
 
     <script>
+        // --- SMART LOGIC ---
         function checkConditions() {
             const startTime = document.getElementById('gridStartTime').value;
-            const interval = document.getElementById('intervalSelect').value;
             const intervalSelect = document.getElementById('intervalSelect');
             const addBtn = document.getElementById('btnAddBtn');
 
-            if (startTime) {
+            // 1. Check Start Time
+            if (startTime && startTime !== "") {
                 intervalSelect.disabled = false;
             } else {
                 intervalSelect.disabled = true;
-                intervalSelect.value = "";
+                intervalSelect.value = ""; 
                 addBtn.disabled = true;
                 return;
             }
 
-            if (startTime && interval) {
+            // 2. Check Interval
+            if (intervalSelect.value && intervalSelect.value !== "") {
                 addBtn.disabled = false;
-                const table = document.getElementById('monitorTable');
-                if (table.rows[0].cells.length === 1) {
-                    addSmartColumn(true); 
-                }
             } else {
                 addBtn.disabled = true;
             }
         }
 
-        function addSmartColumn(isFirstColumn = false) {
+        function handleAddTimeClick() {
             const headerRow = document.getElementById('headerRow');
+            // If only 1 cell exists (the label), we add Start Time
+            const isFirstColumn = (headerRow.cells.length === 1);
+            addSmartColumn(isFirstColumn);
+        }
+
+        function addSmartColumn(isFirstColumn) {
+            const headerRow = document.getElementById('headerRow');
+            const startTimeInput = document.getElementById('gridStartTime').value;
             const intervalVal = parseInt(document.getElementById('intervalSelect').value);
             let newTimeLabel = "";
 
             if (isFirstColumn) {
-                newTimeLabel = document.getElementById('gridStartTime').value;
+                newTimeLabel = startTimeInput;
             } else {
-                const lastTimeText = headerRow.cells[headerRow.cells.length - 1].innerText;
+                // Calculate Next Time
+                const lastTh = headerRow.cells[headerRow.cells.length - 1];
+                const lastTimeText = lastTh.innerText;
                 let [hours, minutes] = lastTimeText.split(':').map(Number);
+                
                 let dateObj = new Date();
                 dateObj.setHours(hours);
-                dateObj.setMinut
+                dateObj.setMinutes(minutes + intervalVal);
+
+                let newHours = dateObj.getHours().toString().padStart(2, '0');
+                let newMinutes = dateObj.getMinutes().toString().padStart(2, '0');
+                newTimeLabel = `${newHours}:${newMinutes}`;
+            }
+
+            // Create Header
+            const newTh = document.createElement('th');
+            newTh.innerText = newTimeLabel;
+            newTh.contentEditable = "true";
+            headerRow.appendChild(newTh);
+
+            // Create Body Cells
+            const bodyRows = document.getElementById('tableBody').rows;
+            for (let i = 0; i < bodyRows.length; i++) {
+                // Skip Divider Row
+                if(bodyRows[i].classList.contains('section-divider')) {
+                    const currentSpan = parseInt(bodyRows[i].cells[0].colSpan) || 1;
+                    bodyRows[i].cells[0].colSpan = currentSpan + 1;
+                    continue;
+                }
+                const newCell = bodyRows[i].insertCell(-1);
+                const newInput = document.createElement('input');
+                newInput.type = "text"; 
+                newCell.appendChild(newInput);
+            }
+        }
+
+        function addDrugRow() {
+            const tableBody = document.getElementById('tableBody');
+            const fluidsRow = document.getElementById('fluidsRow');
+            const timeColCount = document.getElementById('headerRow').cells.length - 1;
+
+            const newRow = document.createElement('tr');
+            newRow.className = 'row-drug';
+
+            const cell1 = document.createElement('td');
+            const nameInput = document.createElement('input');
+            nameInput.placeholder = "Drug Name";
+            nameInput.style.fontWeight = "bold";
+            nameInput.style.color = "#e65100"; // Distinct text color
+            nameInput.style.textAlign = "left";
+            nameInput.style.paddingLeft = "10px";
+            cell1.appendChild(nameInput);
+            newRow.appendChild(cell1);
+
+            for (let i = 0; i < timeColCount; i++) {
+                const newCell = document.createElement('td');
+                const input = document.createElement('input');
+                input.type = "text";
+                newCell.appendChild(input);
+                newRow.appendChild(newCell);
+            }
+            tableBody.insertBefore(newRow, fluidsRow);
+        }
+    </script>
+</body>
+</html>
